@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NetSage AI – Network Diagnosis Dashboard</title>
+  <meta name="description" content="NetSage AI intelligent network fault diagnosis dashboard — visualize AI diagnoses, human review outcomes, and responsible AI metrics." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ───────── SIDEBAR ───────── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">⬡</div>
+      <div>
+        <div class="logo-title">NetSage AI</div>
+        <div class="logo-sub">Network Intelligence</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-section="overview" id="nav-overview">
+        <span class="nav-icon">◈</span> Overview
+      </a>
+      <a href="#" class="nav-item" data-section="diagnoses" id="nav-diagnoses">
+        <span class="nav-icon">⬡</span> AI Diagnoses
+      </a>
+      <a href="#" class="nav-item" data-section="reviews" id="nav-reviews">
+        <span class="nav-icon">◎</span> Human Reviews
+      </a>
+      <a href="#" class="nav-item" data-section="responsible" id="nav-responsible">
+        <span class="nav-icon">◇</span> Responsible AI
+      </a>
+      <a href="#" class="nav-item" data-section="checker" id="nav-checker">
+        <span class="nav-icon">◆</span> Rule Checker
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-status">
+        <span class="status-dot pulse"></span>
+        <span>System Active</span>
+      </div>
+      <div class="sidebar-version">v2.0 · Rule-Based Sim</div>
+    </div>
+  </aside>
+
+  <!-- ───────── MAIN ───────── -->
+  <main class="main">
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" id="menuBtn" aria-label="Toggle menu">☰</button>
+        <div class="breadcrumb" id="breadcrumb">Overview</div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-time" id="topbarTime"></div>
+        <div class="topbar-updated" id="topbarUpdated" title="Last data fetch time" style="display:none;"></div>
+        <button class="refresh-btn" id="refreshBtn" title="Reload data from logs">↻ Refresh</button>
+      </div>
+    </header>
+
+    <!-- ═══ OVERVIEW SECTION ═══ -->
+    <section class="section active" id="section-overview">
+      <div class="section-header">
+        <h1>System Overview</h1>
+        <p class="section-sub">Real-time snapshot of AI diagnosis engine performance</p>
+      </div>
+
+      <!-- KPI CARDS -->
+      <div class="kpi-grid" id="kpiGrid">
+        <div class="kpi-card kpi-accent-blue">
+          <div class="kpi-icon">⬡</div>
+          <div class="kpi-value" id="kpiTotalCases">—</div>
+          <div class="kpi-label">Total Cases</div>
+          <div class="kpi-sub">Loaded from dataset</div>
+        </div>
+        <div class="kpi-card kpi-accent-green">
+          <div class="kpi-icon">✓</div>
+          <div class="kpi-value" id="kpiAccuracy">—</div>
+          <div class="kpi-label">AI Accuracy</div>
+          <div class="kpi-sub">Score ≥ 60/100</div>
+        </div>
+        <div class="kpi-card kpi-accent-yellow">
+          <div class="kpi-icon">◎</div>
+          <div class="kpi-value" id="kpiReviewed">—</div>
+          <div class="kpi-label">Reviewed</div>
+          <div class="kpi-sub">Human validated</div>
+        </div>
+        <div class="kpi-card kpi-accent-purple">
+          <div class="kpi-icon">◇</div>
+          <div class="kpi-value" id="kpiAgreement">—</div>
+          <div class="kpi-label">Agreement Rate</div>
+          <div class="kpi-sub">Human vs AI</div>
+        </div>
+      </div>
+
+      <!-- CHARTS ROW -->
+      <div class="charts-row">
+        <div class="card chart-card">
+          <div class="card-header">
+            <h3>Diagnoses by Concept</h3>
+            <span class="card-badge">All Cases</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="conceptChart"></canvas>
+          </div>
+        </div>
+        <div class="card chart-card">
+          <div class="card-header">
+            <h3>Severity Distribution</h3>
+            <span class="card-badge">AI Classified</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="severityChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- OVERVIEW TABLE + REVIEW SUMMARY -->
+      <div class="charts-row">
+        <div class="card" style="flex:2">
+          <div class="card-header">
+            <h3>Recent Diagnoses</h3>
+            <span class="card-badge" id="recentBadge">Loading…</span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table" id="recentTable">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Root Cause</th>
+                  <th>Concept</th>
+                  <th>Confidence</th>
+                  <th>Severity</th>
+                  <th>Score</th>
+                </tr>
+              </thead>
+              <tbody id="recentTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card" style="flex:1">
+          <div class="card-header">
+            <h3>Review Summary</h3>
+            <span class="card-badge">Human Feedback</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px;padding:8px 0;">
+            <canvas id="reviewDonut" height="180"></canvas>
+            <div id="reviewLegend" style="display:flex;flex-direction:column;gap:8px;margin-top:8px;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ AI DIAGNOSES SECTION ═══ -->
+    <section class="section" id="section-diagnoses">
+      <div class="section-header">
+        <h1>AI Diagnoses</h1>
+        <p class="section-sub">Full list of AI-generated network fault diagnoses</p>
+      </div>
+
+      <!-- FILTER BAR -->
+      <div class="filter-bar">
+        <input type="text" class="filter-input" id="diagSearch" placeholder="Search by symptom, concept, root cause…" />
+        <select class="filter-select" id="diagFilterConcept">
+          <option value="">All Concepts</option>
+        </select>
+        <select class="filter-select" id="diagFilterConf">
+          <option value="">All Confidence</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+        <select class="filter-select" id="diagFilterSeverity">
+          <option value="">All Severity</option>
+          <option value="Critical">Critical</option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+        <span class="filter-count" id="diagCount">0 cases</span>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table class="data-table" id="diagTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Root Cause</th>
+                <th>Concept</th>
+                <th>OSI Layer</th>
+                <th>Confidence</th>
+                <th>Severity</th>
+                <th>Score</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="diagTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ HUMAN REVIEWS SECTION ═══ -->
+    <section class="section" id="section-reviews">
+      <div class="section-header">
+        <h1>Human Reviews</h1>
+        <p class="section-sub">Expert validation of AI-generated diagnoses</p>
+      </div>
+
+      <div class="filter-bar">
+        <input type="text" class="filter-input" id="revSearch" placeholder="Search reviews…" />
+        <select class="filter-select" id="revFilterStatus">
+          <option value="">All Statuses</option>
+          <option value="Accepted">Accepted</option>
+          <option value="Edited">Edited</option>
+          <option value="Rejected">Rejected</option>
+        </select>
+        <select class="filter-select" id="revFilterReviewer">
+          <option value="">All Reviewers</option>
+        </select>
+        <span class="filter-count" id="revCount">0 reviews</span>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table class="data-table" id="revTable">
+            <thead>
+              <tr>
+                <th>Case ID</th>
+                <th>Symptom</th>
+                <th>AI Root Cause</th>
+                <th>Status</th>
+                <th>Reviewer</th>
+                <th>Reviewed At</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="revTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ RESPONSIBLE AI SECTION ═══ -->
+    <section class="section" id="section-responsible">
+      <div class="section-header">
+        <h1>Responsible AI Log</h1>
+        <p class="section-sub">Cases where human experts corrected AI diagnoses — driving model improvement</p>
+      </div>
+
+      <div class="resp-kpi-row" id="respKpis">
+        <!-- populated by JS -->
+      </div>
+
+      <div id="respCases">
+        <!-- populated by JS -->
+      </div>
+    </section>
+
+    <!-- ═══ RULE CHECKER SECTION ═══ -->
+    <section class="section" id="section-checker">
+      <div class="section-header">
+        <h1>Rule Checker</h1>
+        <p class="section-sub">Deterministic validation of Cisco network configurations</p>
+      </div>
+
+      <div class="checker-grid" id="checkerGrid">
+        <!-- populated by JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ───────── MODAL ───────── -->
+  <div class="modal-backdrop" id="modalBackdrop" style="display:none;">
+    <div class="modal" id="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">Detail</h3>
+        <button class="close-btn" id="closeModal">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
