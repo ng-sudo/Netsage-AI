@@ -14,82 +14,123 @@
 
 ## 📖 Overview
 
-**NetSage AI** is a comprehensive, AI-driven platform designed to revolutionize how network faults are diagnosed, reviewed, and resolved. By combining advanced AI inference with deterministic rule-checking and a human-in-the-loop review system, NetSage AI provides network engineers with a powerful toolset to maintain network health and validate configurations with confidence.
+NetSage AI is an AI-assisted network troubleshooting system for Cisco Packet Tracer scenarios. It analyzes network symptoms and Cisco show command outputs to identify probable faults, provide evidence-based diagnoses, suggest troubleshooting commands and fixes, and support human-in-the-loop review and Responsible AI evaluation.
+
+The project combines machine learning-powered inference with deterministic rule checks to provide explainable, auditable guidance for network engineers and students.
 
 ---
 
 ## ✨ Key Features
 
-- 🧠 **Automated AI Diagnosis**: Rapidly analyzes network state and detects complex faults using advanced AI inference.
-- 🛡️ **Deterministic Rule Validation**: Checks network configurations (e.g., Cisco devices) against strict networking rules to ensure compliance and prevent misconfigurations.
-- 🧑‍💻 **Human-in-the-Loop (HITL)**: Empowers network experts to review, edit, and validate AI diagnoses, creating a feedback loop that continuously improves model accuracy.
-- 📊 **Real-Time Interactive Dashboard**: A sleek, web-based UI that visualizes system performance, AI vs. Human agreement rates, case severities, and recent diagnoses.
+- 🧠 Automated AI Diagnosis — Analyzes network state and show-command outputs to surface likely root-causes and supporting evidence.
+- 🛡️ Deterministic Rule Validation — Validates configurations against a set of networking rules to catch misconfigurations and policy violations.
+- 🧑‍💻 Human-in-the-Loop (HITL) — Allows experts to review, correct, and annotate AI predictions; feedback can be used to improve models.
+- 📊 Real-Time Dashboard — Static web UI for visualizing cases, metrics (AI vs. human agreement), and recent diagnoses.
+- 🔎 Explainability & Evidence — Each diagnosis is accompanied by the evidence (command outputs, rule hits) used to support it.
+- ♻️ Responsible AI Evaluation — Tracks confidence, disagreement, and audit artifacts to help evaluate model behavior and safety.
 
 ---
 
-## 🏗️ Project Architecture
+## 🏗️ Project Structure
 
-The repository is modularly structured to separate the backend intelligence from the frontend visualization:
+The repository is organized to separate the backend intelligence from the frontend visualization and support tooling:
 
-| Directory | Description |
-| --- | --- |
-| 📁 **`ai_engine/`** | Core Python backend for analyzing network states and running AI inference (`diagnoser.py`). |
-| 📁 **`dashboard/`** | The web-based frontend (HTML/CSS/JS) for visualizing data and system metrics. |
-| 📁 **`checker/`** | Tools for deterministic validation of network configurations. |
-| 📁 **`review/`** | Modules managing human expert validation and feedback on AI predictions. |
-| 📁 **`prompts/`** | AI prompt templates and definitions used by the diagnosis engine. |
-| 📁 **`logs/`** | Directory for storing application and system execution logs. |
+- ai_engine/ — Python backend for parsing device outputs, running inference, and producing diagnoses (e.g., diagnoser.py).
+- dashboard/ — Static frontend (HTML/CSS/JS) that displays cases, metrics, and review workflows.
+- checker/ — Deterministic validation tools and rule definitions for configuration checks.
+- review/ — Modules for human review workflows, annotations, and audit logs.
+- prompts/ — Prompt templates and definitions used by the diagnosis engine.
+- logs/ — Application and system logs (runtime artifacts).
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Quickstart (Local)
 
-Follow these steps to get a local copy up and running.
+Follow these steps to run a minimal local setup.
 
-### 1. Prerequisites
-- **Python 3.8+** (for the backend AI Engine)
-- A modern web browser (for the Dashboard)
+1) Prerequisites
+- Python 3.8+ (recommended)
+- A modern web browser for the dashboard
 
-### 2. Backend Setup (AI Engine)
-Clone the repository and set up the Python environment:
+2) Clone the repository
+
 ```bash
-# Clone the repository
 git clone https://github.com/ng-sudo/Netsage-AI.git
 cd Netsage-AI
+```
 
-# Create and activate a virtual environment (Recommended)
+3) (Optional but recommended) Create a virtual environment and install dependencies
+
+```bash
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
+# If a requirements.txt exists, install dependencies
+if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+```
 
-# Run the diagnoser
+4) Run the AI diagnoser
+
+```bash
 python ai_engine/diagnoser.py
 ```
 
-### 3. Frontend Setup (Dashboard)
-The dashboard is entirely static and requires no build steps!
-1. Navigate to the `dashboard/` directory.
-2. Open `index.html` in your favorite web browser. 
-   *(Tip: Use the **Live Server** extension in VS Code for an optimal development experience).*
+Notes:
+- diagnoser.py is the entry point for running the analysis engine. It may accept flags or configuration files depending on your local copy — run with `-h` or inspect the file for available options.
+- The dashboard is static. To view it locally, open `dashboard/index.html` in your browser or use the Live Server extension in VS Code for a better developer experience.
+
+---
+
+## 🔧 Usage & Examples
+
+- Run a single Packet Tracer scenario: feed the collected `show` outputs to the diagnoser and review the generated case in the dashboard or logs.
+- Validate configurations: use `checker/` utilities to run deterministic checks against device running-config snippets.
+
+Add example command lines and sample inputs in `examples/` (recommended) so new users can try a complete end-to-end case quickly.
+
+---
+
+## 🧪 Responsible AI & Evaluation
+
+NetSage AI collects evidence and confidence scores alongside every diagnosis to support transparent decisions and auditability. Key recommended practices:
+
+- Keep human review enabled for low-confidence or high-severity cases.
+- Record reviewer annotations and disagreements to improve model calibration.
+- Maintain an audit trail (logs and reviewer notes) for every production diagnosis.
+
+---
+
+## 🛠️ Development
+
+- Frontend: dashboard/ is static HTML/CSS/JS. No build step required; contributions to UI can be made by editing files directly.
+- Backend: ai_engine/ contains the diagnostic logic. When contributing, include unit tests for parsing and rule checks.
+
+Suggested development workflow:
+1. Fork the repo and create a feature branch
+2. Implement changes and add tests
+3. Run the diagnoser and verify outputs
+4. Open a Pull Request with a clear description of the change
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Contributions are welcome! To contribute:
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/YourFeature`
+3. Commit your changes: `git commit -m "Add feature: ..."`
+4. Push and open a Pull Request
+
+Please include a short description of the problem your change fixes and add tests where appropriate.
 
 ---
 
 ## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+This project is distributed under the MIT License. See `LICENSE` for details.
 
 ---
+
 <div align="center">
-  <i>Built with ❤️ for better networks.</i>
+  <i>Built with ❤️ for safer, more reliable networks.</i>
 </div>
